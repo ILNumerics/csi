@@ -1,1 +1,153 @@
-//test
+// ILNumerics configuration script - turns Visual Studio CSI REPL into a mathematical command prompt. 
+// See: https://github.com/ILNumerics/csi and http://ilnumerics.net
+
+#if !NOSCRIPT
+#r "ILNumerics.Computing"
+#r "ILNumerics.Core"
+#r "ILNumerics.Drawing"
+#r "ILNumerics.Toolboxes.Interpolation"
+#r "ILNumerics.Toolboxes.Optimization"
+#r "ILNumerics.Toolboxes.Drawing2"
+#r "ILNumerics.Toolboxes.Statistics"
+#r "ILNumerics.Toolboxes.MachineLearning"
+#r "ILNumerics.IO.HDF5"
+#r "System.Drawing"
+#endif
+
+using System; 
+using ILNumerics;
+using ILNumerics.Drawing;
+using ILNumerics.Drawing.Plotting;
+using System.Drawing; 
+using System.Windows.Forms; 
+using System.Linq; 
+
+// we cannot import the static classes here, since it does not work when run in the script for unknown reasons.
+using static ILNumerics.ILMath;
+//using static ILNumerics.Toolboxes.Interpolation;
+//using static ILNumerics.Toolboxes.Optimization;
+//using static ILNumerics.Toolboxes.MachineLearning;
+//using static ILNumerics.Toolboxes.Statistics;
+public const string RETCODE = "ok"; 
+
+#if NOSCRIPT
+public static class GLOBAL {
+    public static void GLOBAL() {
+#endif
+
+        Console.Out.WriteLine($"ILNumerics CSI - version {typeof(ILMath).Assembly.GetName().Version.ToString()}");
+        Console.Out.WriteLine($"Type 'help' for options.");
+
+#if NOSCRIPT
+    }
+}
+#endif
+
+string help {
+    get {
+        Console.Out.Write("All ILMath functions are available: abs(randn(1,10))\r\nNew line 2");
+        return RETCODE;
+    }
+}
+
+#region Plotting specific types / functions 
+public static int FigureCounter = 0;
+public static int CurrentFigure = -1;
+
+public class ILForm : Form {
+    public ILPanel Panel {
+        get {
+            if (Controls.Count > 0 && Controls[0] is ILPanel) {
+
+				// register a refresh in 1 sec - this is a hack to release the user from having to call f.Refresh() all the time... 
+				RefreshDelayed(); 
+
+                return Controls[0] as ILPanel; 
+            }
+            return null; 
+        }
+    }
+    public ILPlotCube PlotCube {
+        get {
+            return Panel.Scene?.First<ILPlotCube>();
+        }
+    }
+    public ILScene Scene {
+        get {
+            if (Panel != null) {
+                return Panel.Scene; 
+            }
+            return null;
+        }
+    }
+    public ILForm() {
+		Width=591; 
+		Height=481;
+        var panel = new ILPanel() {
+            Dock = DockStyle.Fill
+        };
+        Controls.Add(panel);
+    }
+    public async void RefreshDelayed(int ms = 1000) {
+        await Task.Delay(ms); 
+        // this is expected to run on the main UI thread
+		(Controls[0] as ILPanel).Scene.Configure(); 
+		Refresh();
+	}
+}
+
+public static ILForm figure(int i = -1, string title = null) {
+    ILForm ret;
+    if (i < 0) {
+        i = CurrentFigure;
+    }
+    if (FindForm(i, out ret)) {
+        CurrentFigure = i;
+		ret.Show();
+		ret.Activate(); 
+        return ret;
+    }
+
+    ret = new ILForm();
+    if (i <= 0) {
+        i = ++FigureCounter;
+    }
+    if (title == null) {
+        title = $"Figure {i}";
+    }
+    ret.Text = title;
+    ret.Tag = i;
+    CurrentFigure = i;
+	ret.Show();
+    ret.Activate();
+    return ret; 
+}
+
+private static bool FindForm(int i, out ILForm ret) {
+    foreach (var form in Application.OpenForms) {
+        var f = form as ILForm; 
+        if (form != null && f != null && f.Tag?.ToString() == i.ToString()) {
+            ret = f;
+            return true; 
+        }
+    }
+    ret = null;
+    return false; 
+}
+
+// this must be extended ...
+public static ILLinePlot plot(ILInArray<double> A) {
+    using (ILScope.Enter(A)) {
+        var f = figure();
+        var linePlot = new ILLinePlot(ILMath.tosingle(A));
+        if (f.PlotCube == null) {
+            f.Scene.Add(new ILPlotCube());
+        }
+        f.PlotCube.Add(linePlot);
+		f.PlotCube.Configure(); 
+		f.PlotCube.Reset(); 
+		f.Refresh(); 
+        return linePlot;
+    }
+}
+#endregion
