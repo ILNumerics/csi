@@ -1,5 +1,5 @@
 # csi
-This projects extends the [https://github.com/dotnet/roslyn/wiki/Interactive-Window](Visual Studio CSharp Interactive REPL) to provide fancy Matlab - like syntax and features. 
+This projects extends the [Visual Studio CSharp Interactive REPL](https://github.com/dotnet/roslyn/wiki/Interactive-Window) to provide fancy Matlab - like syntax and features. 
 
 This repository hosts a script for the Visual Studio interactive CSharp console REPL (CSI). It provides convenience functions to be used inside the REPL and to simulate a look-and-feel similar to other popular mathematical prototyping systems, namely Matlab[R] and Octave.
 
@@ -7,7 +7,7 @@ ILNumerics CSI is a community project. It can be used by everyone free of charge
 
 # Requirements
 * Visual Studio 2015, Update 1 or later
-* ILNumerics 4.12 or later ([download](http://ilnumerics.net/download))
+* ILNumerics 4.12 or later ([download](http://ilnumerics.net/download)). Note that older version of ILNumerics will require a trial license to be valid on the system.
 
 # Getting started
 We use the *unmodified* CSI REPL. To make the new features available download a script from this repository and load it into the CSI. The necessary steps are explained below.
@@ -29,4 +29,25 @@ You can simply copy&paste these lines into the CSI REPL and press `Enter`. This 
 3. Run the script in the REPL: 
      #load "ilnumerics.rsp"
 
+# First Steps
+Make all functions from ILMath directly available: 
+
+     using static ILNumerics.ILMath; 
+
+Plot some numbers: 
+
+     plot(new double[] {1,3,2,4,-2,-3,10,0.4});
+![CSI Plot1](http://ilnumerics.net/media/png/CSI_Plot1.png)
+
+Plot some more numbers, use the same figure:
+
+     plot(randn(100,10000));
+![CSI Plot2](http://ilnumerics.net/media/png/CSI_Plot2.png)
+
+Give the figure a name: 
+
+     figure().Scene.Add(new ILTitle("my Plot is Hot"))
+
+Move the title with the left mouse button: 
+![CSI Plot3](http://ilnumerics.net/media/png/CSI_Plot3.png)
 
