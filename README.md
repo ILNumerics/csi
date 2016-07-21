@@ -1,4 +1,4 @@
-# csi
+# ILNumerics - csi
 This projects extends the [Visual Studio CSharp Interactive REPL](https://github.com/dotnet/roslyn/wiki/Interactive-Window) to provide fancy Matlab - like syntax and features for ad-hoc evaluations and prototyping in Visual Studio. 
 
 This repository hosts a script for the Visual Studio interactive CSharp console REPL (CSI). It provides convenience functions to be used inside the REPL and to simulate a look-and-feel similar to other popular mathematical prototyping systems, namely Matlab[R] and Octave.
@@ -14,19 +14,22 @@ We use the *unmodified* CSI REPL. To make the new features available download a 
 
 1. Start Visual Studio and open the CSharp interactive REPL (CSI). The REPL is available in all editions of Visual Studio 2015, Update 1 or later. Go: VIEW -> Other Windows -> C# Interactive.  
 2. Now load the script from this git repository. You can do this directly from the REPL! Just use the `WebClient.DownloadFile` method. The CSI supports us in including the neccessary `using` directive. When we start typing...
-    new WebClient() 
-it displays a light bulb which we can use to add the suggested `using System.Net` namespace. 
+
+     new WebClient()
+
+... it displays a light bulb which we can use to add the suggested `using System.Net` namespace. 
 
 ![CSI Light Bulb](http://ilnumerics.net/media/png/CSI_lightbulb.png)
 
 The full command to load the script will look like this:
+
      > using System.Net;
-     . 
      . new WebClient().DownloadFile("https://raw.githubusercontent.com/ILNumerics/csi/master/ilnumerics.rsp", "ilnumerics.rsp");
     
 You can simply copy&paste these lines into the CSI REPL and press `Enter`. This will download the ILNumerics script from the GIT repository and store it into your user's directory.
 
 3. Run the script in the REPL: 
+
      #load "ilnumerics.rsp"
 
 # First Steps
@@ -39,7 +42,7 @@ Plot some numbers:
      plot(new double[] {1,3,2,4,-2,-3,10,0.4});
 ![CSI Plot1](http://ilnumerics.net/media/png/CSI_Plot1.png)
 
-Plot some more numbers, use the same figure:
+Plot some more numbers, use the same figure and `ILMath.randn()`:
 
      plot(randn(1,10000));
 ![CSI Plot2](http://ilnumerics.net/media/png/CSI_Plot2.png)
@@ -48,15 +51,15 @@ Give the figure a name. (Use the CSI light bulb to import new namespaces! When t
 
      figure().Scene.Add(new ILTitle("my Plot is Hot"))
 
-Move the title with the left mouse button: 
+Move the [title](http://ilnumerics.net/examples.php?exid=0378cf4a52ac6c9e4c59cd2b91b4afac) with the left mouse button: 
 ![CSI Plot3](http://ilnumerics.net/media/png/CSI_Plot3.png)
 
-Use the left mouse to drag a zoom rectangle, double click resets the scene, right mouse is for panning. 
+Use the left mouse on the plot cubes content to drag a zoom rectangle, double click resets the scene, right mouse is for panning. 
 
 # Next steps
-Until more higher-level functions have been implemented into ILNumerics-csi (the script in this repository) you can already use all of ILNumerics Computing Engine, Visualization Engine and Toolboxes by utilizing the [common API](http://ilnumerics.net/docs).
+The scripts in this repository build a bridge between ILNumerics and the CSI REPL. This is just a very early starting point. Until more higher-level functions have been implemented into ILNumerics-csi (the script in this repository) you can already use all of ILNumerics Computing Engine, Visualization Engine and Toolboxes' features by utilizing the [common API](http://ilnumerics.net/docs).
 
-Add a new figure with 3D [plot cube](https://ilnumerics.net/plot-cube-properties.html): 
+Add a new figure as 3D [plot cube](https://ilnumerics.net/plot-cube-properties.html): 
 
      var pc = figure(2).Scene.Add(new ILPlotCube(twoDMode: false));
 
@@ -111,7 +114,9 @@ Handle [mouse events](https://ilnumerics.net/mouse-events.html). Here: [pick pos
 
 # More...
 
-* Visit the [ILNumerics Examples section](https://ilnumerics.net/examples.php) to get more ideas what is possible with ILNumerics. Fetch your own [license](http://ilnumerics.net/download) and read more in the ILNumerics [online docunmentation](https://ilnumerics.net/docs.html). 
+* ILNumerics is designed for technical *application* development. Enabling it to be used interactively the way described here is our way of saying 'thanks' to the community. You were supporting the project for almost 10 years now! 
+
+* Visit the [ILNumerics Examples section](https://ilnumerics.net/examples.php) to get more ideas what is possible with ILNumerics. Fetch your own [license](http://ilnumerics.net/download) and read more in the ILNumerics [online documentation](https://ilnumerics.net/docs.html). 
 
 * Fork this repository and add new higher-level functions, similar to `plot` etc. Send pull requests and open new issues here on github. 
 
